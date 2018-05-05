@@ -1,2 +1,2 @@
 # PostgresLocust
-Custom Postgres client for Locust.io
+Postgres client for Locust.io
