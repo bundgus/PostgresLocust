@@ -5,7 +5,7 @@ import sys
 import os
 
 
-class PostgresTasks(TaskSet):
+class PostgresLocustClientTasks(TaskSet):
     @task(1)
     def query1(self):
         self.client.query1("select count(*) from table1")
@@ -15,7 +15,7 @@ class PostgresTasks(TaskSet):
         self.client.query2("select * from table1")
 
 
-class PostgresTestPlan(PostgresLocust):
+class PostgresLocustClient(PostgresLocust):
     host = "localhost"
     dbname = 'localawsdb'
     user = 'postgres'
@@ -24,7 +24,7 @@ class PostgresTestPlan(PostgresLocust):
     min_wait = 0
     max_wait = 0
 
-    task_set = PostgresTasks
+    task_set = PostgresLocustClientTasks
 
 
 if __name__ == "__main__":
