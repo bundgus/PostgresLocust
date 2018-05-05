@@ -1,1 +1,6 @@
 .idea/
+__pycache__/
+locust_request_failures.csv
+locust_results_distribution.csv
+locust_results_requests.csv
+postgreslocust/__pycache__/
