@@ -6,10 +6,12 @@ from locust import Locust, TaskSet, events, task
 
 
 class PostgresClient(object):
-    def __init__(self, host, dbname, user, password):
-        connect_str = "dbname='" + dbname + "' user='" + user + "' host='" + host + "' " + \
+    def __init__(self, host, port, dbname, user, password,  readonly=True, autocommit=True, request_type='psycopg2'):
+        self.request_type = request_type
+        connect_str = "dbname='" + dbname + "' user='" + user + "' host='" + host + "' port='" + str(port) + "' " + \
                       "password='" + password + "'"
         conn = psycopg2.connect(connect_str)
+        conn.set_session(readonly=readonly, autocommit=autocommit)
         self.cursor = conn.cursor()
 
     def __getattr__(self, name):
@@ -21,10 +23,11 @@ class PostgresClient(object):
                 result = self.cursor.fetchall()
             except Exception as e:
                 total_time = int((time.time() - start_time) * 1000)
-                events.request_failure.fire(request_type="psycopg2", name=name, response_time=total_time, exception=e)
+                events.request_failure.fire(request_type=self.request_type, name=name, response_time=total_time,
+                                            exception=e)
             else:
                 total_time = int((time.time() - start_time) * 1000)
-                events.request_success.fire(request_type="psycopg2", name=name, response_time=total_time,
+                events.request_success.fire(request_type=self.request_type, name=name, response_time=total_time,
                                             response_length=len(str(result)))
         return wrapper
 
@@ -32,7 +35,7 @@ class PostgresClient(object):
 class PostgresLocust(Locust):
     def __init__(self, *args, **kwargs):
         super().__init__()
-        self.client = PostgresClient(self.host, self.dbname, self.user, self.password)
+        self.client = PostgresClient(self.host, self.port, self.dbname, self.user, self.password)
         events.request_failure += self.hook_request_fail
         events.quitting += self.hook_locust_quit
         request_failures_file = open("locust_request_failures.csv", "w")

@@ -5,18 +5,27 @@ import sys
 import os
 
 
+# noinspection SqlResolve,SqlNoDataSourceInspection
 class PostgresLocustClientTasks(TaskSet):
     @task(1)
     def query1(self):
-        self.client.query1("select count(*) from table1")
+        query1 = '''
+        select count(*) 
+        from table1
+        '''
+        self.client.query1(query1)
 
     @task(1)
     def query2(self):
-        self.client.query2("select * from table1")
+        query2 = '''
+        select * from table1
+        '''
+        self.client.query2(query2)
 
 
 class PostgresLocustClient(PostgresLocust):
     host = "localhost"
+    port = 5432  # redshift is 5439
     dbname = 'localawsdb'
     user = 'postgres'
     password = 'postgres'
