@@ -13,14 +13,14 @@ class PostgresLocustClientTasks(TaskSet):
         select count(*) 
         from table1
         '''
-        self.client.query1(query1)
+        self.client.query1(query1)  # this is where the results get the label 'query1'  ...client.[querylabel](...
 
     @task(1)
     def query2(self):
         query2 = '''
         select * from table1
         '''
-        self.client.query2(query2)
+        self.client.query2(query2)  # this is where the results get the label 'query2'  ...client.[querylabel](...
 
 
 class PostgresLocustClient(PostgresLocust):
