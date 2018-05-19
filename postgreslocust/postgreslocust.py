@@ -1,5 +1,5 @@
 import time
-import psycopg2
+import pg8000
 import csv
 import datetime
 from locust import Locust, TaskSet, events, task
@@ -10,8 +10,8 @@ class PostgresClient(object):
         self.request_type = request_type
         connect_str = "dbname='" + dbname + "' user='" + user + "' host='" + host + "' port='" + str(port) + "' " + \
                       "password='" + password + "'"
-        conn = psycopg2.connect(connect_str)
-        conn.set_session(readonly=readonly, autocommit=autocommit)
+        # ssl = False, timeout = None, application_name = None
+        conn = pg8000.connect(user, host=host, port=port, database=dbname, password=password)
         self.cursor = conn.cursor()
 
     def __getattr__(self, name):

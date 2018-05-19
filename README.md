@@ -1,7 +1,7 @@
 # PostgresLocust
 Postgres client for Locust.io
 
-Uses the psycopg2 Python Postgres client.
+Uses the pg8000 Python Postgres client.
 
 
 Start the example postgre_locust_example.py
