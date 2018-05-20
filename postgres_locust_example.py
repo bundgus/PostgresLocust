@@ -15,7 +15,7 @@ class PostgresLocustClientTasks(TaskSet):
         '''
         self.client.query1(query1)  # this is where the results get the label 'query1'  ...client.[querylabel](...
 
-    @task(1)
+    @task(2)
     def query2(self):
         query2 = '''
         select * from table1
@@ -29,9 +29,10 @@ class PostgresLocustClient(PostgresLocust):
     dbname = 'localawsdb'
     user = 'postgres'
     password = 'postgres'
+    pool_size = 1  # maximum number of concurrent queries per locust before they block
 
-    min_wait = 0
-    max_wait = 0
+    min_wait = 500
+    max_wait = 1000
 
     task_set = PostgresLocustClientTasks
 

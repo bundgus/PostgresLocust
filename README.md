@@ -1,7 +1,7 @@
 # PostgresLocust
 Postgres client for Locust.io
 
-Uses the pg8000 Python Postgres client.
+Uses the pg8000 Python Postgres client and SQLAlchemy for connection pooling.
 
 
 Start the example postgre_locust_example.py

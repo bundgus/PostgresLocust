@@ -1,2 +1,4 @@
+gevent
+sqlalchemy
 pg8000
 locustio
