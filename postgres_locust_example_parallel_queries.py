@@ -46,7 +46,7 @@ class PostgresLocustClient(PostgresLocust):
 
 if __name__ == "__main__":
     # http://localhost:8089/
-    locusts = 1  # specifies the number of Locust users to spawn
+    locusts = 5  # specifies the number of Locust users to spawn
     hatch_rate = 1  # -r specifies the hatch rate (number of users to spawn per second)
 
     # starting with locust 0.9
