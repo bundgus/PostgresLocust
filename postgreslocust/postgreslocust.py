@@ -1,10 +1,10 @@
 import time
-import pg8000
 import csv
 import datetime
 from locust import Locust, events
 from sqlalchemy import create_engine
 from sqlalchemy.engine import url
+from argparse import ArgumentParser
 
 
 class PostgresClient(object):
@@ -47,13 +47,20 @@ class PostgresLocust(Locust):
                                      pool_size=self.pool_size)
         events.request_failure += self.hook_request_fail
         events.quitting += self.hook_locust_quit
-        request_failures_file = open("locust_request_failures.csv", "w")
-        writer = csv.writer(request_failures_file, quoting=csv.QUOTE_NONNUMERIC)
+
+        parser = ArgumentParser()
+        parser.add_argument("--csv", dest="log_file_prefix")
+        args, unknown = parser.parse_known_args()
+        print('log_file_prefix: ' + args.log_file_prefix)
+        failures_file_name = args.log_file_prefix + '_failures.csv'
+
+        request_failures_file = open(failures_file_name, "w")
+        writer = csv.writer(request_failures_file, quoting=csv.QUOTE_NONNUMERIC, lineterminator='\n')
         writer.writerow(['timestamp', 'name', 'request_type', 'response_time', 'exception'])
         request_failures_file.flush()
         request_failures_file.close()
-        self.request_failures_file = open("locust_request_failures.csv", "a")
-        self.writer = csv.writer(self.request_failures_file, quoting=csv.QUOTE_NONNUMERIC)
+        self.request_failures_file = open(failures_file_name, "a")
+        self.writer = csv.writer(self.request_failures_file, quoting=csv.QUOTE_NONNUMERIC, lineterminator='\n')
 
     def hook_request_fail(self, request_type, name, response_time, exception):
         self.writer.writerow([datetime.datetime.now().isoformat(), name, request_type, response_time, exception])
