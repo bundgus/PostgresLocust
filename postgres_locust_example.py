@@ -3,6 +3,7 @@ from postgreslocust import PostgresLocust
 from locust.main import main
 import sys
 import os
+import json
 
 
 # noinspection SqlResolve,SqlNoDataSourceInspection
@@ -24,11 +25,17 @@ class PostgresLocustClientTasks(TaskSet):
 
 
 class PostgresLocustClient(PostgresLocust):
-    host = "localhost"
-    port = 5432  # redshift is 5439
-    dbname = 'localawsdb'
-    user = 'postgres'
-    password = 'postgres'
+
+    with open('database_login_params.json') as db_params_json_file:
+        db_params = json.load(db_params_json_file)
+
+    #need host, dbname, user, and password
+    host = db_params['host']
+    port = int(db_params['port'])  # redshift is 5439
+    dbname = db_params['dbname']
+    user = db_params['user']
+    password = db_params['password']
+
     pool_size = 1  # maximum number of concurrent queries per locust before they block
 
     min_wait = 500
