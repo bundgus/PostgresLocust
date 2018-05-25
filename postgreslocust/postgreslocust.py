@@ -30,6 +30,7 @@ class PostgresClient(object):
             try:
                 result = self.engine.execute(*args, **kwargs).fetchall()
             except Exception as e:
+                print('Exception occurred: ' + str(e))
                 total_time = int((time.time() - start_time) * 1000)
                 events.request_failure.fire(request_type=self.request_type, name=name, response_time=total_time,
                                             exception=e)

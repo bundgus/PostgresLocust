@@ -29,7 +29,7 @@ class PostgresLocustClient(PostgresLocust):
     with open('database_login_params.json') as db_params_json_file:
         db_params = json.load(db_params_json_file)
 
-    #need host, dbname, user, and password
+    #need host, port, dbname, user, and password
     host = db_params['host']
     port = int(db_params['port'])  # redshift is 5439
     dbname = db_params['dbname']
