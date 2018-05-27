@@ -4,11 +4,12 @@ import datetime
 from locust import Locust, events
 from sqlalchemy import create_engine
 from sqlalchemy.engine import url
+from sqlalchemy import event
 from argparse import ArgumentParser
 
 
 class PostgresClient(object):
-    def __init__(self, host, port, dbname, user, password, readonly=True, autocommit=True,
+    def __init__(self, host, port, dbname, user, password, redshift_cache_query_results=False,
                  request_type='pg8000', pool_size=1, max_overflow=0):
         self.request_type = request_type
         database_connection_params = {
@@ -23,6 +24,15 @@ class PostgresClient(object):
                                     pool_size=pool_size, max_overflow=max_overflow,
                                     isolation_level="AUTOCOMMIT"
                                     )
+
+        # Execute Redshift command to disable session level query caching for each new connection created
+        if not redshift_cache_query_results:
+            event.listen(self.engine, 'connect', self.disable_result_cache_for_session)
+
+    @staticmethod
+    def disable_result_cache_for_session(dbapi_con, connection_record):
+        cursor = dbapi_con.cursor()
+        cursor.execute('SET enable_result_cache_for_session TO OFF;')
 
     def __getattr__(self, name):
         def wrapper(*args, **kwargs):
@@ -45,7 +55,8 @@ class PostgresLocust(Locust):
     def __init__(self, *args, **kwargs):
         super().__init__()
         self.client = PostgresClient(self.host, self.port, self.dbname, self.user, self.password,
-                                     pool_size=self.pool_size)
+                                     pool_size=self.pool_size,
+                                     redshift_cache_query_results=self.redshift_cache_query_results)
         events.request_failure += self.hook_request_fail
         events.quitting += self.hook_locust_quit
 
