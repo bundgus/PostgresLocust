@@ -54,6 +54,11 @@ class PostgresClient(object):
 class PostgresLocust(Locust):
     def __init__(self, *args, **kwargs):
         super().__init__()
+
+        # replace empty configuration with default value
+        if not hasattr(self, 'redshift_cache_query_results'):
+            self.redshift_cache_query_results = True
+
         self.client = PostgresClient(self.host, self.port, self.dbname, self.user, self.password,
                                      pool_size=self.pool_size,
                                      redshift_cache_query_results=self.redshift_cache_query_results)
